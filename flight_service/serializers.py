@@ -27,12 +27,6 @@ class AirportSerializer(serializers.ModelSerializer):
 
 
 class RouteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Route
-        fields = "__all__"
-
-
-class RouteListSerializer(serializers.ModelSerializer):
     source = serializers.SlugField(
         source="source.name",
     )
@@ -45,8 +39,24 @@ class RouteListSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class RouteListSerializer(RouteSerializer):
+    class Meta:
+        model = Route
+        fields = ("id", "source", "destination")
+
+
+class RouteDetailSerializer(RouteSerializer):
+    source = AirportSerializer(
+        read_only=True, many=False
+
+    )
+    destination = AirportSerializer(
+        read_only=True, many=False
+    )
+
+
 class FlightSerializer(serializers.ModelSerializer):
-    route = serializers.StringRelatedField(read_only=True, many=False)
+    route = RouteListSerializer(read_only=True, many=False)
     airplane = serializers.StringRelatedField(read_only=True, many=False)
     crew = serializers.StringRelatedField(read_only=True, many=True)
 
@@ -76,6 +86,10 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 class TicketFlightDetailSerializer(FlightListSerializer):
+    route = RouteDetailSerializer(
+        read_only=True, many=False
+    )
+
     class Meta:
         model = Flight
         fields = ("route", "airplane", "departure_time", "arrival_time")
@@ -83,11 +97,10 @@ class TicketFlightDetailSerializer(FlightListSerializer):
 
 class TicketListSerializer(TicketSerializer):
     flight = TicketFlightDetailSerializer(many=False, read_only=True)
-    route = RouteListSerializer(many=False, read_only=True)
 
 
 class TicketDetailSerializer(TicketListSerializer):
-    flight = FlightListSerializer(many=False, read_only=True)
+    flight = TicketFlightDetailSerializer(many=False, read_only=True)
 
     class Meta:
         model = Ticket
@@ -106,6 +119,9 @@ class TicketSeatSerializer(TicketDetailSerializer):
 
 
 class FlightDetailSerializer(FlightSerializer):
+    route = RouteSerializer(
+        many=False, read_only=True
+    )
     seats_taken = TicketSeatSerializer(
         source="tickets", many=True, read_only=True
     )
