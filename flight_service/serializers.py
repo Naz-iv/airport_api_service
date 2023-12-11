@@ -27,19 +27,21 @@ class AirportSerializer(serializers.ModelSerializer):
 
 
 class RouteSerializer(serializers.ModelSerializer):
-    source = serializers.SlugField(
-        source="source.name",
-    )
-    destination = serializers.SlugField(
-        source="destination.name",
-    )
-
     class Meta:
         model = Route
         fields = "__all__"
 
 
 class RouteListSerializer(RouteSerializer):
+    source = serializers.SlugField(
+        source="source.name",
+        read_only=True
+    )
+    destination = serializers.SlugField(
+        source="destination.name",
+        read_only=True
+    )
+
     class Meta:
         model = Route
         fields = ("id", "source", "destination")
@@ -47,18 +49,15 @@ class RouteListSerializer(RouteSerializer):
 
 class RouteDetailSerializer(RouteSerializer):
     source = AirportSerializer(
-        read_only=True, many=False
+        read_only=False, many=False
 
     )
     destination = AirportSerializer(
-        read_only=True, many=False
+        read_only=False, many=False
     )
 
 
 class FlightSerializer(serializers.ModelSerializer):
-    route = RouteListSerializer(read_only=True, many=False)
-    airplane = serializers.StringRelatedField(read_only=True, many=False)
-    crew = serializers.StringRelatedField(read_only=True, many=True)
 
     class Meta:
         model = Flight
@@ -66,6 +65,9 @@ class FlightSerializer(serializers.ModelSerializer):
 
 
 class FlightListSerializer(FlightSerializer):
+    route = RouteListSerializer(read_only=True, many=False)
+    airplane = serializers.StringRelatedField(read_only=True, many=False)
+    crew = serializers.StringRelatedField(read_only=True, many=True)
     tickets_available = serializers.IntegerField(read_only=True)
 
 
