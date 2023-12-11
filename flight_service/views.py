@@ -65,7 +65,7 @@ class AirportViewSet(viewsets.ModelViewSet):
         return self.queryset
 
 
-class OrderPagination(PageNumberPagination):
+class CustomPagination(PageNumberPagination):
     page_size = 2
     page_size_query_param = "page_size"
     max_page_size = 100
@@ -74,7 +74,7 @@ class OrderPagination(PageNumberPagination):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     permission_classes = (AllowAny,)
-    pagination_class = OrderPagination
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -136,6 +136,7 @@ class FlightViewSet(viewsets.ModelViewSet):
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     permission_classes = (AllowAny,)
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.action == "list":
