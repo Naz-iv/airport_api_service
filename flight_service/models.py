@@ -26,6 +26,9 @@ class Order(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="orders"
     )
 
+    class Meta:
+        ordering = ("-created_at",)
+
     def __str__(self):
         return f"Order #{self.id} created by {self.user}"
 
@@ -108,8 +111,12 @@ class Ticket(models.Model):
 
 
 class Route(models.Model):
-    source = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="route_sources")
-    destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="route_destinations")
+    source = models.ForeignKey(
+        Airport, on_delete=models.CASCADE, related_name="route_sources"
+    )
+    destination = models.ForeignKey(
+        Airport, on_delete=models.CASCADE, related_name="route_destinations"
+    )
     distance = models.IntegerField(validators=[MinValueValidator(1)])
 
     def __str__(self):
