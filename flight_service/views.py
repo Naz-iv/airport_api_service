@@ -1,3 +1,4 @@
+from django.db.models import F, Count
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 
@@ -20,6 +21,10 @@ from flight_service.serializers import (
     FlightSerializer,
     TicketSerializer,
     RouteSerializer,
+    RouteListSerializer,
+    TicketListSerializer,
+    FlightListSerializer,
+    OrderListSerializer, OrderDetailSerializer, AirplaneDetailSerializer,
 )
 
 
@@ -37,8 +42,15 @@ class AirportViewSet(viewsets.ModelViewSet):
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
-    serializer_class = OrderSerializer
     permission_classes = (AllowAny,)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return OrderListSerializer
+        if self.action == "retrieve":
+            return OrderDetailSerializer
+
+        return OrderSerializer
 
 
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
@@ -49,23 +61,48 @@ class AirplaneTypeViewSet(viewsets.ModelViewSet):
 
 class AirplaneViewSet(viewsets.ModelViewSet):
     queryset = Airplane.objects.all()
-    serializer_class = AirplaneSerializer
     permission_classes = (AllowAny,)
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return AirplaneDetailSerializer
+
+        return AirplaneSerializer
 
 
 class FlightViewSet(viewsets.ModelViewSet):
     queryset = Flight.objects.all()
-    serializer_class = FlightSerializer
     permission_classes = (AllowAny,)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return FlightListSerializer
+        return FlightSerializer
+
+    def get_queryset(self):
+        return self.queryset.annotate(
+            tickets_available=(
+                F("airplane__rows") * F("airplane__seats")
+                - Count("tickets")
+            )
+        )
 
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
-    serializer_class = TicketSerializer
     permission_classes = (AllowAny,)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return TicketListSerializer
+        return TicketSerializer
 
 
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all()
-    serializer_class = RouteSerializer
     permission_classes = (AllowAny,)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return RouteListSerializer
+        return RouteSerializer
