@@ -8,10 +8,16 @@ class Crew(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.first_name + " " + self.last_name
+
 
 class Airport(models.Model):
     name = models.CharField(max_length=255)
-    closes_big_city = models.CharField(max_length=255)
+    closest_big_city = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
 
 
 class Order(models.Model):
@@ -20,9 +26,15 @@ class Order(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="orders"
     )
 
+    def __str__(self):
+        return f"Order #{self.id} created by {self.user}"
+
 
 class AirplaneType(models.Model):
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
 
 
 class Airplane(models.Model):
@@ -33,6 +45,13 @@ class Airplane(models.Model):
         AirplaneType, related_name="airplanes", on_delete=models.CASCADE
     )
 
+    @property
+    def capacity(self) -> int:
+        return self.rows * self.seats
+
+    def __str__(self):
+        return self.name
+
 
 class Flight(models.Model):
     route = models.ForeignKey("Route", related_name="flights", on_delete=models.CASCADE)
@@ -42,6 +61,9 @@ class Flight(models.Model):
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
     crew = models.ManyToManyField(Crew, related_name="flights")
+
+    def __str__(self):
+        return f"Flight #{self.id}: {self.route}. Airplane: {self.airplane}"
 
 
 class Ticket(models.Model):
@@ -56,11 +78,11 @@ class Ticket(models.Model):
 
     @staticmethod
     def validate_ticket(row, seat, airplane, error_to_raise):
-        if 1 < row < airplane.rows:
+        if not 1 <= row <= airplane.rows:
             raise error_to_raise(
                 f"Row should be in range (1, {airplane.rows}), not {row}"
             )
-        if 1 < seat < airplane.seats:
+        if not 1 <= seat <= airplane.seats:
             raise error_to_raise(
                 f"Seat should be in range (1, {airplane.seats}), not {seat}"
             )
@@ -81,8 +103,14 @@ class Ticket(models.Model):
             force_insert, force_update, using, update_fields
         )
 
+    def __str__(self):
+        return f"Ticker #{self.id}: seat #{self.seat}, row #{self.row}"
+
 
 class Route(models.Model):
     source = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="route_sources")
     destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="route_destinations")
     distance = models.IntegerField(validators=[MinValueValidator(1)])
+
+    def __str__(self):
+        return f"from {self.source} to {self.destination}"
