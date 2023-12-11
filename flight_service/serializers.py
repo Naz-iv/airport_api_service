@@ -86,7 +86,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 class TicketFlightDetailSerializer(FlightListSerializer):
-    route = RouteDetailSerializer(
+    route = RouteListSerializer(
         read_only=True, many=False
     )
 
@@ -164,7 +164,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderListSerializer(OrderSerializer):
-    tickets = TicketDetailSerializer(many=True, read_only=True)
+    tickets = TicketListSerializer(many=True, read_only=True)
 
 
 class OrderDetailSerializer(OrderSerializer):
