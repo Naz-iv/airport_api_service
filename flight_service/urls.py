@@ -19,7 +19,7 @@ router.register("orders", OrderViewSet)
 router.register("airplane-types", AirplaneTypeViewSet)
 router.register("airplanes", AirplaneViewSet)
 router.register("flights", FlightViewSet)
-router.register("ticket", TicketViewSet)
+router.register("tickets", TicketViewSet)
 router.register("routes", RouteViewSet)
 
 urlpatterns = [path("", include(router.urls))]
