@@ -30,7 +30,7 @@ class Order(models.Model):
         ordering = ("-created_at",)
 
     def __str__(self):
-        return f"Order #{self.id} created by {self.user}"
+        return f"Order #{self.id}"
 
 
 class AirplaneType(models.Model):
@@ -66,7 +66,7 @@ class Flight(models.Model):
     crew = models.ManyToManyField(Crew, related_name="flights")
 
     def __str__(self):
-        return f"Flight #{self.id}: {self.route}. Airplane: {self.airplane}"
+        return f"Flight #{self.id}"
 
 
 class Ticket(models.Model):
@@ -120,4 +120,4 @@ class Route(models.Model):
     distance = models.IntegerField(validators=[MinValueValidator(1)])
 
     def __str__(self):
-        return f"from {self.source} to {self.destination}"
+        return f"from {self.source.name} to {self.destination.name}"
