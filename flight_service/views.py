@@ -29,6 +29,7 @@ from flight_service.serializers import (
     AirplaneDetailSerializer,
     FlightDetailSerializer,
     TicketDetailSerializer,
+    RouteDetailSerializer,
 )
 
 
@@ -55,6 +56,16 @@ class OrderViewSet(viewsets.ModelViewSet):
             return OrderDetailSerializer
 
         return OrderSerializer
+
+    def get_queryset(self):
+        return self.queryset.prefetch_related(
+            "tickets",
+            "tickets__flight",
+            "tickets__flight__crew",
+            "tickets__flight__airplane",
+            "tickets__flight__route__source",
+            "tickets__flight__route__destination",
+        )
 
 
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
@@ -86,7 +97,9 @@ class FlightViewSet(viewsets.ModelViewSet):
         return FlightSerializer
 
     def get_queryset(self):
-        return self.queryset.annotate(
+        return self.queryset.prefetch_related(
+            "airplane", "route__source", "route__destination", "crew"
+        ).annotate(
             tickets_available=(
                 F("airplane__rows") * F("airplane__seats") - Count("tickets")
             )
@@ -104,6 +117,16 @@ class TicketViewSet(viewsets.ModelViewSet):
             return TicketDetailSerializer
         return TicketSerializer
 
+    def get_queryset(self):
+        return self.queryset.prefetch_related(
+            "flight",
+            "order__user",
+            "flight__route",
+            "flight__route__source",
+            "flight__route__destination",
+            "flight__airplane",
+        )
+
 
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all()
@@ -112,4 +135,10 @@ class RouteViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return RouteListSerializer
+        if self.action == "retrieve":
+            return RouteDetailSerializer
+
         return RouteSerializer
+
+    def get_queryset(self):
+        return self.queryset.select_related("source", "destination")
