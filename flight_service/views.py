@@ -24,7 +24,11 @@ from flight_service.serializers import (
     RouteListSerializer,
     TicketListSerializer,
     FlightListSerializer,
-    OrderListSerializer, OrderDetailSerializer, AirplaneDetailSerializer,
+    OrderListSerializer,
+    OrderDetailSerializer,
+    AirplaneDetailSerializer,
+    FlightDetailSerializer,
+    TicketDetailSerializer,
 )
 
 
@@ -77,13 +81,14 @@ class FlightViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return FlightListSerializer
+        if self.action == "retrieve":
+            return FlightDetailSerializer
         return FlightSerializer
 
     def get_queryset(self):
         return self.queryset.annotate(
             tickets_available=(
-                F("airplane__rows") * F("airplane__seats")
-                - Count("tickets")
+                F("airplane__rows") * F("airplane__seats") - Count("tickets")
             )
         )
 
@@ -95,6 +100,8 @@ class TicketViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return TicketListSerializer
+        if self.action == "retrieve":
+            return TicketDetailSerializer
         return TicketSerializer
 
 
