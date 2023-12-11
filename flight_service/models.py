@@ -16,7 +16,9 @@ class Airport(models.Model):
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name="orders")
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="orders"
+    )
 
 
 class AirplaneType(models.Model):
@@ -25,14 +27,18 @@ class AirplaneType(models.Model):
 
 class Airplane(models.Model):
     name = models.CharField(max_length=255)
-    rows = models.IntegerField(validators=MinValueValidator(1))
-    seats = models.IntegerField(validators=MinValueValidator(1))
-    airplane_type = models.ForeignKey(AirplaneType, related_name="airplanes", on_delete=models.SET_NULL)
+    rows = models.IntegerField(validators=[MinValueValidator(1)])
+    seats = models.IntegerField(validators=[MinValueValidator(1)])
+    airplane_type = models.ForeignKey(
+        AirplaneType, related_name="airplanes", on_delete=models.CASCADE
+    )
 
 
 class Flight(models.Model):
     route = models.ForeignKey("Route", related_name="flights", on_delete=models.CASCADE)
-    airplane = models.ForeignKey(Airplane, related_name="flights", on_delete=models.SET_NULL)
+    airplane = models.ForeignKey(
+        Airplane, related_name="flights", on_delete=models.CASCADE
+    )
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
     crew = models.ManyToManyField(Crew, related_name="flights")
@@ -63,16 +69,12 @@ class Ticket(models.Model):
         Ticket.validate_ticket(
             self.row,
             self.seat,
-            self.flight.airport,
+            self.flight.airplane,
             ValidationError,
         )
 
     def save(
-        self,
-        force_insert=False,
-        force_update=False,
-        using=None,
-        update_fields=None
+        self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         self.full_clean()
         return super(Ticket, self).save(
@@ -81,6 +83,6 @@ class Ticket(models.Model):
 
 
 class Route(models.Model):
-    source = models.ForeignKey(Airport, on_delete=models.CASCADE)
-    destination = models.ForeignKey(Airport, on_delete=models.CASCADE)
-    distance = models.IntegerField(validators=MinValueValidator(1))
+    source = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="route_sources")
+    destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="route_destinations")
+    distance = models.IntegerField(validators=[MinValueValidator(1)])
