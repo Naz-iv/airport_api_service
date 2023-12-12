@@ -1,12 +1,11 @@
 from datetime import datetime
 
 from django.db.models import F, Count, Q
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (
-    IsAdminUser,
-    IsAuthenticatedOrReadOnly, IsAuthenticated
-)
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from flight_service.models import (
     Crew,
@@ -39,6 +38,7 @@ from flight_service.serializers import (
     RouteDetailSerializer,
 )
 
+
 class CustomPagination(PageNumberPagination):
     page_size = 2
     page_size_query_param = "page_size"
@@ -57,8 +57,21 @@ class CrewViewSet(viewsets.ModelViewSet):
         if search_query:
             return self.queryset.filter(
                 Q(first_name__icontains=search_query)
-                | Q(last_name__icontains=search_query))
+                | Q(last_name__icontains=search_query)
+            )
         return self.queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="search crew member",
+                type={"type": str},
+                description="Search crew member by first_name or last_name (ex. ?search=Joe)"
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class AirportViewSet(viewsets.ModelViewSet):
@@ -74,6 +87,18 @@ class AirportViewSet(viewsets.ModelViewSet):
             return self.queryset.filter(name__icontains=name)
 
         return self.queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="name",
+                type={"type": str},
+                description="Search airport by name (ex. ?name=Heathrow)"
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -97,9 +122,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         return OrderSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(
-            user=self.request.user
-        )
+        return self.queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -128,13 +151,31 @@ class AirplaneViewSet(viewsets.ModelViewSet):
         name = self.request.query_params.get("name")
 
         if type_id:
-            self.queryset = self.queryset.select_related(
-                "airplane_type").filter(airplane_type__id=int(type_id))
+            self.queryset = self.queryset.select_related("airplane_type").filter(
+                airplane_type__id=int(type_id)
+            )
 
         if name:
             self.queryset = self.queryset.filter(name__icontains=name)
 
         return self.queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="type",
+                type={"type": str},
+                description="Search airplane by type id (ex. ?type=1)"
+            ),
+            OpenApiParameter(
+                name="name",
+                type={"type": str},
+                description="Search airplane by name (ex. ?name=Airbus)"
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class FlightViewSet(viewsets.ModelViewSet):
@@ -161,14 +202,10 @@ class FlightViewSet(viewsets.ModelViewSet):
 
         if date:
             date = datetime.strptime(date, "%Y-%m-%d").date()
-            self.queryset = self.queryset.filter(
-                departure_time__date=date
-            )
+            self.queryset = self.queryset.filter(departure_time__date=date)
 
         if source:
-            self.queryset = self.queryset.filter(
-                route__source__name__icontains=source
-            )
+            self.queryset = self.queryset.filter(route__source__name__icontains=source)
 
         if destination:
             self.queryset = self.queryset.filter(
@@ -177,9 +214,31 @@ class FlightViewSet(viewsets.ModelViewSet):
 
         return self.queryset.annotate(
             tickets_available=(
-                    F("airplane__rows") * F("airplane__seats") - Count("tickets")
+                F("airplane__rows") * F("airplane__seats") - Count("tickets")
             )
         )
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="date",
+                type={"type": str},
+                description="Search flight by departure date (ex. ?date=2023-12-27)"
+            ),
+            OpenApiParameter(
+                name="source",
+                type={"type": str},
+                description="Search flight by source airport name (ex. ?source=Heathrow)"
+            ),
+            OpenApiParameter(
+                name="destination",
+                type={"type": str},
+                description="Search flight by destination airport name (ex. ?destination=Kingsford)"
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class TicketViewSet(viewsets.ReadOnlyModelViewSet):
@@ -202,9 +261,7 @@ class TicketViewSet(viewsets.ReadOnlyModelViewSet):
         return TicketSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(
-            order__user=self.request.user
-        )
+        return self.queryset.filter(order__user=self.request.user)
 
 
 class RouteViewSet(viewsets.ModelViewSet):
