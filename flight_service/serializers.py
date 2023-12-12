@@ -115,8 +115,24 @@ class TicketSeatSerializer(TicketDetailSerializer):
         fields = ("row", "seat")
 
 
+class AirplaneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Airplane
+        fields = "__all__"
+
+
+class AirplaneDetailSerializer(AirplaneSerializer):
+    airplane_type = serializers.SlugField(source="airplane_type.name")
+
+    class Meta:
+        model = Airplane
+        fields = ("id", "name", "rows", "seats", "capacity", "airplane_type")
+
+
 class FlightDetailSerializer(FlightSerializer):
-    route = RouteSerializer(many=False, read_only=True)
+    route = RouteDetailSerializer(many=False, read_only=True)
+    airplane = AirplaneDetailSerializer(many=False, read_only=True)
+
     seats_taken = TicketSeatSerializer(source="tickets", many=True, read_only=True)
 
     class Meta:
@@ -170,17 +186,3 @@ class AirplaneTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AirplaneType
         fields = "__all__"
-
-
-class AirplaneSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Airplane
-        fields = "__all__"
-
-
-class AirplaneDetailSerializer(AirplaneSerializer):
-    airplane_type = serializers.SlugField(source="airplane_type.name")
-
-    class Meta:
-        model = Airplane
-        fields = ("id", "name", "rows", "seats", "capacity", "airplane_type")
