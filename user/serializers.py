@@ -4,7 +4,6 @@ from django.utils.translation import gettext as _
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = get_user_model()
         fields = ("id", "email", "password", "is_staff")
@@ -42,9 +41,7 @@ class AuthTokenSerializer(serializers.Serializer):
             if user:
                 if not user.is_active:
                     msg = _("User account is disabled.")
-                    raise serializers.ValidationError(
-                        msg, code="authorization"
-                    )
+                    raise serializers.ValidationError(msg, code="authorization")
             else:
                 msg = _("Unable to log in with provided credentials.")
                 raise serializers.ValidationError(msg, code="authorization")
