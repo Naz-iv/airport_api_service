@@ -35,7 +35,7 @@ Follow the link [Airport Service API](https://airport-service-api-v9qf.onrender.
 
 ### More complex but full of fun way
 
-#### Getting Started
+#### Working with git repository
 
 To set up the Airport Service API, follow these steps:
 
@@ -52,6 +52,21 @@ To set up the Airport Service API, follow these steps:
     docker-compose build
     docker-compose up
     ```
+
+#### Working with Docker Hub
+
+To set up the Airport Service API, follow these steps:
+
+1. Pull image from Docker Hub:
+    ```
+    docker pull nivankiv/airport_api_service-app:latest
+    ```
+2. Run Docker Container:
+    ```
+    docker-compose up
+    ```
+
+##### When Git API project of Docker Hub image is ready for user:
 
 You need to generate access token. Do to: ``127.0.0.1:8000/api/users/token``
 
