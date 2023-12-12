@@ -3,7 +3,6 @@ from datetime import datetime
 from django.db.models import F, Count, Q
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets
-from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
@@ -65,7 +64,7 @@ class CrewViewSet(viewsets.ModelViewSet):
         parameters=[
             OpenApiParameter(
                 name="search crew member",
-                type={"type": str},
+                type={"type": "string", "items": {"type": "string"}},
                 description="Search crew member by first_name or last_name (ex. ?search=Joe)"
             )
         ]
@@ -92,7 +91,7 @@ class AirportViewSet(viewsets.ModelViewSet):
         parameters=[
             OpenApiParameter(
                 name="name",
-                type={"type": str},
+                type={"type": "string", "items": {"type": "string"}},
                 description="Search airport by name (ex. ?name=Heathrow)"
             )
         ]
@@ -164,12 +163,12 @@ class AirplaneViewSet(viewsets.ModelViewSet):
         parameters=[
             OpenApiParameter(
                 name="type",
-                type={"type": str},
+                type={"type": "string", "items": {"type": "string"}},
                 description="Search airplane by type id (ex. ?type=1)"
             ),
             OpenApiParameter(
                 name="name",
-                type={"type": str},
+                type={"type": "string", "items": {"type": "string"}},
                 description="Search airplane by name (ex. ?name=Airbus)"
             )
         ]
@@ -222,17 +221,17 @@ class FlightViewSet(viewsets.ModelViewSet):
         parameters=[
             OpenApiParameter(
                 name="date",
-                type={"type": str},
+                type={"type": "string", "items": {"type": "string"}},
                 description="Search flight by departure date (ex. ?date=2023-12-27)"
             ),
             OpenApiParameter(
                 name="source",
-                type={"type": str},
+                type={"type": "string", "items": {"type": "string"}},
                 description="Search flight by source airport name (ex. ?source=Heathrow)"
             ),
             OpenApiParameter(
                 name="destination",
-                type={"type": str},
+                type={"type": "string", "items": {"type": "string"}},
                 description="Search flight by destination airport name (ex. ?destination=Kingsford)"
             )
         ]
