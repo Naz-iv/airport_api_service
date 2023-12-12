@@ -6,7 +6,7 @@ ___
 
 ## Airport Service DB Structure
 
-![Airport Service DB Structure](\media\readme_images\img.png)
+![Airport Service DB Structure](static\readme_images\img.png)
 
 ## Features
 
@@ -72,7 +72,7 @@ Value: ``Bearer_space_*your_access_token*``
 
 Access token example. ``Bearer dmwkejeowk.ewkjeoqdowkjefowfejwefjwef.efhnwefowhefojw``
 
-![ModHeader interface](\\media\readme_images\img_1.png)
+![ModHeader interface](\static\readme_images\img_1.png)
 
 Go to ``127.0.0.1:8000/api/flight_service/`` and discover all hidden gems
 
@@ -83,16 +83,16 @@ Thank you for using the Airport Service API!
 
 ## Screenshots
 
-![API main](\media\readme_images\img_2.png)
-![Crew List](\media\readme_images\img_3.png)
-![Airport List](\media\readme_images\img_4.png)
-![Order List](\media\readme_images\img_5.png)
-![Airplane Types List](\media\readme_images\img_6.png)
-![Airplane List](\media\readme_images\img_7.png)
-![Flight List](\media\readme_images\img_8.png)
-![Ticket List](\media\readme_images\img_9.png)
-![Route List](\media\readme_images\img_10.png)
-![Order Details](\media\readme_images\img_11.png)
-![Flight Details](\media\readme_images\img_12.png)
-![Ticket Details](\media\readme_images\img_13.png)
-![Route Details](\media\readme_images\img_14.png)
+![API main](static\readme_images\img_2.png)
+![Crew List](static\readme_images\img_3.png)
+![Airport List](static\readme_images\img_4.png)
+![Order List](static\readme_images\img_5.png)
+![Airplane Types List](static\readme_images\img_6.png)
+![Airplane List](static\readme_images\img_7.png)
+![Flight List](static\readme_images\img_8.png)
+![Ticket List](static\readme_images\img_9.png)
+![Route List](static\readme_images\img_10.png)
+![Order Details](static\readme_images\img_11.png)
+![Flight Details](static\readme_images\img_12.png)
+![Ticket Details](static\readme_images\img_13.png)
+![Route Details](static\readme_images\img_14.png)
