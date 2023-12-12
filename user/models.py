@@ -5,6 +5,7 @@ from django.db import models
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
+
     use_in_migrations = True
 
     def _create_user(self, email: str, password: str, **extra_fields):

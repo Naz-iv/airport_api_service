@@ -19,6 +19,9 @@ class Airport(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ("name",)
+
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -107,7 +110,7 @@ class Ticket(models.Model):
         )
 
     def __str__(self):
-        return f"Ticker #{self.id}: seat #{self.seat}, row #{self.row}"
+        return f"Ticker #{self.id}: row #{self.row}, seat #{self.seat}"
 
 
 class Route(models.Model):
