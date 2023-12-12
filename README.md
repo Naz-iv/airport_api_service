@@ -66,7 +66,7 @@ To set up the Airport Service API, follow these steps:
     docker-compose up
     ```
 
-##### When Git API project of Docker Hub image is ready for user:
+##### When Git API project or Docker Hub image is ready for user:
 
 You need to generate access token. Do to: ``127.0.0.1:8000/api/users/token``
 
